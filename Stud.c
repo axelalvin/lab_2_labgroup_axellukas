@@ -22,7 +22,9 @@ void A_timerinterrupt()
 /* the following routine will be called once (only) before any other */
 /* entity A routines are called. You can use it to do any initialization */
 void A_init()
-{}
+{
+    printf("A initiated...\n");
+}
 
 
 /* Note that with simplex transfer from a-to-B, there is no B_output() */
@@ -38,4 +40,6 @@ void B_timerinterrupt()
 /* the following rouytine will be called once (only) before any other */
 /* entity B routines are called. You can use it to do any initialization */
 void B_init()
-{}
+{
+        printf("B initiated...\n");
+}
