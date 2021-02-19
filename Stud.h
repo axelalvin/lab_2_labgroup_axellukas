@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* ******************************************************************
  ALTERNATING BIT AND GO-BACK-N NETWORK EMULATOR: VERSION 1.1  J.F.Kurose
@@ -34,7 +35,6 @@ struct pkt {
    int checksum;
    char payload[20];
     };
-
 
 //Dessa funktioner finns i Jim.c och tillhör gränsnitten mellan
 //Applikationslager (layer 7) - Transportlager samt Transportlager (layer 4) - Nätverkslager (layer 3)
