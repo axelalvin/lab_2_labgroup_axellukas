@@ -18,7 +18,7 @@
 #define BIDIRECTIONAL 0    /* change to 1 if you're doing extra credit */
                            /* and write a routine called B_output */
 
-/* a "msg" is the data unit passed from layer 5 (teachers code) to layer  */
+/* a "msg" is the data unit passed from layer 5 (teachers code, session) to layer  */
 /* 4 (students' code).  It contains the data (characters) to be delivered */
 /* to layer 5 via the students transport level protocol entities.         */
 struct msg {
@@ -37,7 +37,7 @@ struct pkt {
 
 
 //Dessa funktioner finns i Jim.c och tillhör gränsnitten mellan
-//Applikationslager - Transportlager samt Transportlager - Nätverkslager
+//Applikationslager (layer 7) - Transportlager samt Transportlager (layer 4) - Nätverkslager (layer 3)
 
 /* called by students routine to cancel a previously-started timer */
 void stoptimer(int AorB);  /* A or B is trying to stop timer */
