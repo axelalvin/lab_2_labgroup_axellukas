@@ -38,6 +38,13 @@ struct pkt
   char payload[20];
 };
 
+//min grej
+enum AorB
+{
+  A,
+  B
+};
+
 //Dessa funktioner finns i Jim.c och tillhör gränsnitten mellan
 //Applikationslager (layer 7) - Transportlager samt Transportlager (layer 4) - Nätverkslager (layer 3)
 

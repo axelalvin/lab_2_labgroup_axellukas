@@ -38,7 +38,7 @@ void A_output(struct msg message)
     pkg_cpy = packet;
     bin_num_send_cpy = bin_num_send;
     /*send pkt to lay 3 */
-    tolayer3(1, packet);
+    tolayer3(B, packet);
     starttimer(0, 1000);
 
     /* A will not run again until it receives ack from B side OR timer runs out */
@@ -67,8 +67,7 @@ void A_input(struct pkt packet)
 /* called when A's timer goes off */
 void A_timerinterrupt()
 {
-    //stoptimer(0);
-    tolayer3(1, pkg_cpy);
+    tolayer3(B, pkg_cpy);
     starttimer(0, 1000);
 }
 
@@ -92,11 +91,11 @@ void B_input(struct pkt packet)
         if (packet.seqnum == expected_seqnum_reciver)
         {
             strcpy(message.data, packet.payload);
-            tolayer5(1, message.data);
+            tolayer5(B, message.data);
 
             packet.acknum = expected_seqnum_reciver;
 
-            tolayer3(0, packet);
+            tolayer3(A, packet);
 
             /*send ack msg */
 
