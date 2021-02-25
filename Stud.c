@@ -30,15 +30,16 @@ void A_output(struct msg message)
     /*create pkt with msg as payload */
     strcpy(packet.payload, message.data);
     packet.seqnum = bin_num_send;
-    packet.acknum = bin_num_send;
+    packet.acknum = bin_num_send; // acnum sak nog sättas dit av reciver och inte sender
     packet.checksum = make_check_num(packet);
 
     pkg_cpy = packet;
 
     /*send pkt to lay 3 */
+    starttimer(1, 0.1);
     tolayer3(1, packet);
 
-    bin_num_send = !bin_num_send; //toggle
+    bin_num_send = !bin_num_send; //toggle  // dena bit ska utförs i stoptimer
 
     /* A will not run again until it receives ack from B side OR timer runs out */
 }

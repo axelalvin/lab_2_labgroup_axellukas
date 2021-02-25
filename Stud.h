@@ -16,46 +16,48 @@
      (although some can be lost).
 **********************************************************************/
 
-#define BIDIRECTIONAL 0    /* change to 1 if you're doing extra credit */
-                           /* and write a routine called B_output */
+#define BIDIRECTIONAL 0 /* change to 1 if you're doing extra credit */
+                        /* and write a routine called B_output */
 
 /* a "msg" is the data unit passed from layer 5 (teachers code, session) to layer  */
 /* 4 (students' code).  It contains the data (characters) to be delivered */
 /* to layer 5 via the students transport level protocol entities.         */
-struct msg {
+struct msg
+{
   char data[20];
-  };
+};
 
 /* a packet is the data unit passed from layer 4 (students code) to layer */
 /* 3 (teachers code).  Note the pre-defined packet structure, which all   */
 /* students must follow. */
-struct pkt {
-   int seqnum;
-   int acknum;
-   int checksum;
-   char payload[20];
-    };
+struct pkt
+{
+  int seqnum;
+  int acknum;
+  int checksum;
+  char payload[20];
+};
 
 //Dessa funktioner finns i Jim.c och tillhör gränsnitten mellan
 //Applikationslager (layer 7) - Transportlager samt Transportlager (layer 4) - Nätverkslager (layer 3)
 
 /* called by students routine to cancel a previously-started timer */
-void stoptimer(int AorB);  /* A or B is trying to stop timer */
 
-void starttimer(int AorB, float increment);  /* A or B is trying to stop timer */
-  
-void tolayer3(int AorB, struct pkt packet);  /* A or B is trying to stop timer */
-  
-void tolayer5(int AorB,char datasent[20]);
-  
+void stoptimer(int AorB); /* A or B is trying to stop timer */
+
+void starttimer(int AorB, float increment); /* A or B is trying to stop timer */
+
+void tolayer3(int AorB, struct pkt packet); /* A or B is trying to stop timer */
+
+void tolayer5(int AorB, char datasent[20]);
 
 //Dessa funktioner ska implementeras av studenterna i Stud.c och anropas
 //av det simulerade applikationslagret samt nätverkslagret
 
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message);
-  
-void B_output(struct msg message);  /* need be completed only for extra credit */
+
+void B_output(struct msg message); /* need be completed only for extra credit */
 
 /* called from layer 3, when a packet arrives for layer 4 */
 void A_input(struct pkt packet);
@@ -78,5 +80,3 @@ void B_timerinterrupt();
 /* the following rouytine will be called once (only) before any other */
 /* entity B routines are called. You can use it to do any initialization */
 void B_init();
-
-
