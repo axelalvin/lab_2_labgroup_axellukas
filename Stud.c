@@ -6,7 +6,9 @@ struct pkt pkg_cpy;
 struct msg msg_cpy;
 
 int bin_num_send; //used for seq-ack-check, alters 0-1-0-1...etc
-int bin_num_rec;  //used for seq-ack-check, alters 0-1-0-1...etc
+int bin_num_send_cpy;
+int expected_seqnum_reciver; //used for seq-ack-check, alters 0-1-0-1...etc
+int expected_seqnum_reciver_cpy;
 
 int make_check_num(struct pkt package)
 {
@@ -34,12 +36,10 @@ void A_output(struct msg message)
     packet.checksum = make_check_num(packet);
 
     pkg_cpy = packet;
-
+    bin_num_send_cpy = bin_num_send;
     /*send pkt to lay 3 */
-    starttimer(1, 0.1);
     tolayer3(1, packet);
-
-    bin_num_send = !bin_num_send; //toggle  // dena bit ska utförs i stoptimer
+    starttimer(0, 1000);
 
     /* A will not run again until it receives ack from B side OR timer runs out */
 }
@@ -51,12 +51,25 @@ void B_output(struct msg message) /* need be completed only for extra credit */
 /* called from layer 3, when a packet arrives for layer 4 */
 void A_input(struct pkt packet)
 {
+    stoptimer(0);
+
+    if (bin_num_send_cpy == packet.acknum)
+    {
+        bin_num_send = !bin_num_send; //toggle
+        printf("got ack");
+    }
+    else
+    {
+        printf("wrong ack");
+    }
 }
 
 /* called when A's timer goes off */
 void A_timerinterrupt()
 {
+    //stoptimer(0);
     tolayer3(1, pkg_cpy);
+    starttimer(0, 1000);
 }
 
 /* the following routine will be called once (only) before any other */
@@ -74,21 +87,29 @@ void B_input(struct pkt packet)
 {
     struct msg message;
 
-    if (packet.seqnum = !bin_num_rec)
+    if (packet.checksum == make_check_num(packet))
     {
-        /*timeout*/
-    }
-    else
-    {
-        if (packet.checksum == make_check_num(packet))
+        if (packet.seqnum == expected_seqnum_reciver)
         {
             strcpy(message.data, packet.payload);
             tolayer5(1, message.data);
 
-            /*send ack msg + do something with timer*/
+            packet.acknum = expected_seqnum_reciver;
 
-            bin_num_rec = !bin_num_rec; //toggle
+            tolayer3(0, packet);
+
+            /*send ack msg */
+
+            expected_seqnum_reciver = !expected_seqnum_reciver; //toggle
         }
+        else
+        {
+            printf("worng packet expected\n");
+        }
+    }
+    else
+    {
+        printf("packet corupted\n");
     }
 }
 
@@ -101,6 +122,6 @@ void B_timerinterrupt()
 /* entity B routines are called. You can use it to do any initialization */
 void B_init()
 {
-    bin_num_rec = 0;
+    expected_seqnum_reciver = 0;
     printf("B initiated...\n");
 }
