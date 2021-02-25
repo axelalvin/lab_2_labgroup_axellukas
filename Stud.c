@@ -104,6 +104,8 @@ void B_input(struct pkt packet)
         else
         {
             printf("worng packet expected\n");
+            packet.acknum = expected_seqnum_reciver;
+            tolayer3(A, packet);
         }
     }
     else
