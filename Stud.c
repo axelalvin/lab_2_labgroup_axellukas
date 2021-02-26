@@ -52,6 +52,7 @@ void A_output(struct msg message)
     /*send pkt to lay 3 */
     tolayer3(B, packet);
     starttimer(0, 1000);
+    printf("Pkt %d sent\n", packet.acknum);
 
     /* A will not run again until it receives ack from B side OR timer runs out */
 }
@@ -63,6 +64,7 @@ void B_output(struct msg message) /* need be completed only for extra credit */
 /* called from layer 3, when a packet arrives for layer 4 */
 void A_input(struct pkt packet)
 {
+    //printf("got\n");
 
     if (A_transmissionstate != sending)
     {
@@ -71,16 +73,17 @@ void A_input(struct pkt packet)
     }
 
     stoptimer(0);
+    printf("Pkt %d recieved\n", packet.acknum);
 
     if (bin_num_send_cpy == packet.acknum)
     {
         bin_num_send = !bin_num_send; //toggle
         A_transmissionstate = recived;
-        printf("got ack");
+        //printf("got ack\n");
     }
     else
     {
-        printf("wrong ack");
+        printf("wrong ack\n");
     }
 }
 
