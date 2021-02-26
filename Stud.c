@@ -31,12 +31,13 @@ int make_check_num(struct pkt package)
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
-    printf("Attempting to send...\n");
     if (A_transmissionstate != recived)
     {
         printf("messeage is already beeing sent\n");
         return;
     }
+    printf("Attempting to send...\n");
+
 
     struct pkt packet;
 
@@ -74,18 +75,26 @@ void A_input(struct pkt packet)
         return;
     }
 
+    if (packet.checksum != make_check_num(packet))
+    {
+        printf("A rec cor pkt\n");
+    }
+
     stoptimer(A);
 
     if (bin_num_send_cpy == packet.acknum)
     {
         bin_num_send = !bin_num_send; //toggle
         A_transmissionstate = recived;
-        //printf("got ack\n");
+        printf("A received ack from B on pkt: %d\n", packet.acknum);
     }
     else
     {
         printf("wrong ack\n");
+        return;
     }
+   
+    
 }
 
 /* called when A's timer goes off */
@@ -137,7 +146,7 @@ void B_input(struct pkt packet)
     }
     else
     {
-        printf("packet corupted\n");
+        printf("B recieved corrupted packet\n");
     }
 }
 
