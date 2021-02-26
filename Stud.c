@@ -38,7 +38,6 @@ void A_output(struct msg message)
     }
     printf("Attempting to send...\n");
 
-
     struct pkt packet;
 
     /*create pkt with msg as payload */
@@ -78,14 +77,14 @@ void A_input(struct pkt packet)
     if (packet.checksum != make_check_num(packet))
     {
         printf("A rec cor pkt\n");
+        return;
     }
-
-    stoptimer(A);
 
     if (bin_num_send_cpy == packet.acknum)
     {
         bin_num_send = !bin_num_send; //toggle
         A_transmissionstate = recived;
+        stoptimer(A);
         printf("A received ack from B on pkt: %d\n", packet.acknum);
     }
     else
@@ -93,14 +92,18 @@ void A_input(struct pkt packet)
         printf("wrong ack\n");
         return;
     }
-   
-    
 }
 
 /* called when A's timer goes off */
 void A_timerinterrupt()
 {
+    if (A_transmissionstate != sending)
+    {
+        printf("waiting on an ancnolement\n");
+        return;
+    }
     //stoptimer(A);
+    printf("re sending package %d payload: %s\n", pkg_cpy.seqnum, pkg_cpy.payload);
     tolayer3(A, pkg_cpy);
     starttimer(A, timeontimer);
 }
@@ -131,16 +134,15 @@ void B_input(struct pkt packet)
 
             packet.acknum = expected_seqnum_reciver;
 
-            tolayer3(B, packet);
-
             /*send ack msg */
+            tolayer3(B, packet);
 
             expected_seqnum_reciver = !expected_seqnum_reciver; //toggle
         }
         else
         {
-            printf("worng packet expected\n");
-            packet.acknum = expected_seqnum_reciver;
+            printf("dublicaded packet deteckted\n");
+            //packet.acknum = expected_seqnum_reciver;
             tolayer3(B, packet);
         }
     }
