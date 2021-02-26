@@ -31,7 +31,7 @@ int make_check_num(struct pkt package)
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
-
+    printf("Attempting to send...\n");
     if (A_transmissionstate != recived)
     {
         printf("messeage is already beeing sent\n");
@@ -52,9 +52,9 @@ void A_output(struct msg message)
     A_transmissionstate = sending;
 
     /*send pkt to lay 3 */
-    tolayer3(B, packet);
+    printf("Pkt %d sent: %s\n", packet.acknum, packet.payload);
+    tolayer3(A, packet);
     starttimer(A, timeontimer);
-    printf("Pkt %d sent\n", packet.acknum);
 
     /* A will not run again until it receives ack from B side OR timer runs out */
 }
@@ -75,7 +75,6 @@ void A_input(struct pkt packet)
     }
 
     stoptimer(A);
-    printf("Pkt %d recieved\n", packet.acknum);
 
     if (bin_num_send_cpy == packet.acknum)
     {
@@ -92,8 +91,8 @@ void A_input(struct pkt packet)
 /* called when A's timer goes off */
 void A_timerinterrupt()
 {
-    stoptimer(A);
-    tolayer3(B, pkg_cpy);
+    //stoptimer(A);
+    tolayer3(A, pkg_cpy);
     starttimer(A, timeontimer);
 }
 
@@ -118,11 +117,12 @@ void B_input(struct pkt packet)
         if (packet.seqnum == expected_seqnum_reciver)
         {
             strcpy(message.data, packet.payload);
+            printf("B recieved pkt: %s\n", message.data);
             tolayer5(B, message.data);
 
             packet.acknum = expected_seqnum_reciver;
 
-            tolayer3(A, packet);
+            tolayer3(B, packet);
 
             /*send ack msg */
 
@@ -132,7 +132,7 @@ void B_input(struct pkt packet)
         {
             printf("worng packet expected\n");
             packet.acknum = expected_seqnum_reciver;
-            tolayer3(A, packet);
+            tolayer3(B, packet);
         }
     }
     else
