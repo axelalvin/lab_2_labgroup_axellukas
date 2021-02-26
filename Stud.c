@@ -12,6 +12,8 @@ int expected_seqnum_reciver_cpy;
 
 int A_transmissionstate;
 
+int timeontimer = 1000;
+
 int make_check_num(struct pkt package)
 {
 
@@ -51,7 +53,7 @@ void A_output(struct msg message)
 
     /*send pkt to lay 3 */
     tolayer3(B, packet);
-    starttimer(0, 1000);
+    starttimer(A, timeontimer);
     printf("Pkt %d sent\n", packet.acknum);
 
     /* A will not run again until it receives ack from B side OR timer runs out */
@@ -72,7 +74,7 @@ void A_input(struct pkt packet)
         return;
     }
 
-    stoptimer(0);
+    stoptimer(A);
     printf("Pkt %d recieved\n", packet.acknum);
 
     if (bin_num_send_cpy == packet.acknum)
@@ -90,8 +92,9 @@ void A_input(struct pkt packet)
 /* called when A's timer goes off */
 void A_timerinterrupt()
 {
+    stoptimer(A);
     tolayer3(B, pkg_cpy);
-    starttimer(0, 1000);
+    starttimer(A, timeontimer);
 }
 
 /* the following routine will be called once (only) before any other */
