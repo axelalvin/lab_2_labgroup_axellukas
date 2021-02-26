@@ -10,7 +10,7 @@ int bin_num_send_cpy;
 int expected_seqnum_reciver; //used for seq-ack-check, alters 0-1-0-1...etc
 int expected_seqnum_reciver_cpy;
 
-int transmissionstate;
+int A_transmissionstate;
 
 int make_check_num(struct pkt package)
 {
@@ -30,7 +30,7 @@ int make_check_num(struct pkt package)
 void A_output(struct msg message)
 {
 
-    if (transmissionstate != recived)
+    if (A_transmissionstate != recived)
     {
         printf("messeage is already beeing sent\n");
         return;
@@ -47,7 +47,7 @@ void A_output(struct msg message)
     pkg_cpy = packet;
     bin_num_send_cpy = bin_num_send;
 
-    transmissionstate = sending;
+    A_transmissionstate = sending;
 
     /*send pkt to lay 3 */
     tolayer3(B, packet);
@@ -64,7 +64,7 @@ void B_output(struct msg message) /* need be completed only for extra credit */
 void A_input(struct pkt packet)
 {
 
-    if (transmissionstate != sending)
+    if (A_transmissionstate != sending)
     {
         printf("messeage is already recived\n");
         return;
@@ -75,7 +75,7 @@ void A_input(struct pkt packet)
     if (bin_num_send_cpy == packet.acknum)
     {
         bin_num_send = !bin_num_send; //toggle
-        transmissionstate = recived;
+        A_transmissionstate = recived;
         printf("got ack");
     }
     else
@@ -96,7 +96,7 @@ void A_timerinterrupt()
 void A_init()
 {
     bin_num_send = 0;
-    transmissionstate = sending;
+    A_transmissionstate = recived;
     printf("A initiated...\n");
 }
 
