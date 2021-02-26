@@ -12,7 +12,13 @@ int expected_seqnum_reciver_cpy;
 
 int A_transmissionstate;
 
-int timeontimer = 1000;
+int timeontimer = 1000; // Management of the timer, how you arrived at the right time-out value
+
+/*
+    Detailed Description
+ Calculation and control of the checksum
+ 
+*/
 
 int make_check_num(struct pkt package)
 {
@@ -129,7 +135,7 @@ void B_input(struct pkt packet)
         if (packet.seqnum == expected_seqnum_reciver)
         {
             strcpy(message.data, packet.payload);
-            printf("B recieved pkt: %s\n", message.data);
+            printf("B recieved pkt: %s, seqnum: %d\n", message.data, packet.seqnum);
             tolayer5(B, message.data);
 
             packet.acknum = expected_seqnum_reciver;
@@ -149,6 +155,8 @@ void B_input(struct pkt packet)
     else
     {
         printf("B recieved corrupted packet\n");
+        packet.checksum = -1;
+        //tolayer3(B, packet);
     }
 }
 
