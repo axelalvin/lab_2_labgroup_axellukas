@@ -12,8 +12,7 @@ int expected_seqnum_reciver_cpy;
 
 int A_transmissionstate;
 
-int timeontimer = 1000; // Management of the timer, how you arrived at the right time-out value
-
+float timeontimer = 15; // Management of the timer, how you arrived at the right time-out value
 /*
     Detailed Description
  Calculation and control of the checksum
