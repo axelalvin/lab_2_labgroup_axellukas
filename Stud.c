@@ -7,8 +7,8 @@ struct msg msg_cpy;
 
 int bin_num_send; //used for seq-ack-check, alters 0-1-0-1...etc
 int bin_num_send_cpy;
-int expected_seqnum_reciver; //used for seq-ack-check, alters 0-1-0-1...etc
-int expected_seqnum_reciver_cpy;
+int expected_seqnum_receiver; //used for seq-ack-check, alters 0-1-0-1...etc
+int expected_seqnum_receiver_cpy;
 
 int A_transmissionstate;
 
@@ -70,17 +70,16 @@ void B_output(struct msg message) /* need be completed only for extra credit */
 /* called from layer 3, when a packet arrives for layer 4 */
 void A_input(struct pkt packet)
 {
-    //printf("got\n");
 
     if (A_transmissionstate != sending)
     {
-        printf("messeage is already recived\n");
+        printf("message is already received\n");
         return;
     }
 
     if (packet.checksum != make_check_num(packet))
     {
-        printf("A rec cor pkt\n");
+        printf("A received corrupt packet\n");
         return;
     }
 
@@ -103,11 +102,11 @@ void A_timerinterrupt()
 {
     if (A_transmissionstate != sending)
     {
-        printf("waiting on an ancnolement\n");
+        printf("waiting on an acknowledgement\n");
         return;
     }
     //stoptimer(A);
-    printf("re sending package %d payload: %s\n", pkg_cpy.seqnum, pkg_cpy.payload);
+    printf("resending package %d payload: %s\n", pkg_cpy.seqnum, pkg_cpy.payload);
     tolayer3(A, pkg_cpy);
     starttimer(A, timeontimer);
 }
@@ -130,31 +129,29 @@ void B_input(struct pkt packet)
 
     if (packet.checksum == make_check_num(packet))
     {
-        if (packet.seqnum == expected_seqnum_reciver)
+        if (packet.seqnum == expected_seqnum_receiver)
         {
             strcpy(message.data, packet.payload);
             printf("B recieved pkt: %s, seqnum: %d\n", message.data, packet.seqnum);
             tolayer5(B, message.data);
 
-            packet.acknum = expected_seqnum_reciver;
+            packet.acknum = expected_seqnum_receiver;
 
             /*send ack msg */
             tolayer3(B, packet);
 
-            expected_seqnum_reciver = !expected_seqnum_reciver; //toggle
+            expected_seqnum_receiver = !expected_seqnum_receiver; //toggle
         }
         else
         {
-            printf("dublicaded packet deteckted\n");
-            //packet.acknum = expected_seqnum_reciver;
+            printf("duplicated packet detected\n");
             tolayer3(B, packet);
         }
     }
     else
     {
-        printf("B recieved corrupted packet\n");
+        printf("B received corrupted packet\n");
         packet.checksum = -1;
-        //tolayer3(B, packet);
     }
 }
 
@@ -167,6 +164,6 @@ void B_timerinterrupt()
 /* entity B routines are called. You can use it to do any initialization */
 void B_init()
 {
-    expected_seqnum_reciver = 0;
+    expected_seqnum_receiver = 0;
     printf("B initiated...\n");
 }
